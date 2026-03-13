@@ -1,12 +1,5 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import { Config } from '@/src/screens/tabs/config/config'
 
-const config = () => {
-  return (
-    <View>
-      <Text>Settings</Text>
-    </View>
-  )
+export default function ConfigScreen() {
+    return <Config/>
 }
-
-export default config

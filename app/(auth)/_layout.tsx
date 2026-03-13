@@ -7,6 +7,7 @@ export default function RootLayout() {
           name="index"
           options={{ 
             headerTitle: "",
+            headerShown: false
             }}
         />
       </Stack>
