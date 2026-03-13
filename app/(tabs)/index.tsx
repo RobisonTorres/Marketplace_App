@@ -1,98 +1,219 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useDispatch } from "react-redux";
+import { setSelectedProduct } from "../../src/store/slices/product_details_slice";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const Home = () => {
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [selected, setSelected] = useState("");
+  const [products, setProducts] = useState([]);
+  const dispatch = useDispatch();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  async function getProducts(category, type) {
+    try {
+      const response = await fetch(
+        `https://fakestoreapi.com/products/category/${category}`
+      );
+      const data = await response.json();
+      setProducts(data);
+      setSelected(type);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function handleProduct(product) {
+    dispatch(setSelectedProduct(product));
+    router.push("/product_details");
+  }
+
+  function logout() {
+    router.replace('../');
+  }
+
+  const renderProduct = ({ item }) => (
+    <Pressable
+      style={styles.productCard}
+      onPress={() => handleProduct(item)}
+    >
+      <View>
+        <View style={styles.topImage}>
+          <Image
+            source={{ uri: item.image }}
+            style={styles.productImage}
+          />
+        </View>
+        <View style={styles.infoProducts}>
+          <Text style={styles.title} numberOfLines={1}>
+            {item.title}
+          </Text>
+          <Text style={styles.description} numberOfLines={4}>
+            {item.description}
+          </Text>
+          <Text style={styles.price}>
+            ${item.price}
+          </Text>
+        </View>
+      </View>
+    </Pressable>
   );
-}
+
+  return (
+    <View style={styles.mainView}>
+      <View style={styles.buttonOptions}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            selected === "men" && styles.activeButton
+          ]}
+          onPress={() => getProducts("men%27s%20clothing", "men")}
+        >
+          <Text style={styles.text}>Men's Products</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            selected === "women" && styles.activeButton
+          ]}
+          onPress={() => getProducts("women%27s%20clothing", "women")}
+        >
+          <Text style={styles.text}>Women's Products</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.productsArea}>
+        {products.length > 0 ? (
+          <FlatList
+            data={products}
+            renderItem={renderProduct}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={2}
+            contentContainerStyle={styles.productsContainer}
+          />
+        ) : (
+          <Text style={styles.info}>Press a button to see the products.</Text>
+        )}
+        <Pressable style={styles.fab}>
+          <Text style={{color:"#fff", fontSize:24}}>+</Text>
+        </Pressable>
+        <TouchableOpacity 
+          style={styles.buttonExit}
+          onPress={logout}
+        >
+          <Text style={styles.buttonExitText}>Exit</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+export default Home;
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  mainView: {
+    flex: 1,
+    backgroundColor: "#fff"
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  buttonOptions: {
+    flexDirection: "row",
+    width: "100%",
+    height: 50
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  button: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent"
   },
+  activeButton: {
+    borderBottomColor: "#2567E8"
+  },
+  text: {
+    fontSize: 16
+  },
+  productsArea: {
+    flex: 1,
+    width: "100%"
+  },
+  productsContainer: {
+    paddingBottom: 75,
+    paddingTop: 40,
+    paddingHorizontal: 10
+  },
+  productCard: {
+    flex: 1,
+    margin: 8,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#8f8f8f"
+  },
+  topImage: {
+    width: "100%",
+    height: 120,
+    borderBottomWidth: 1,
+    borderColor: "#8f8f8f",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff"
+  },
+  productImage: {
+    width: "80%",
+    height: 90,
+    resizeMode: "contain"
+  },
+  infoProducts: {
+    padding: 10
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 10
+  },
+  description: {
+    fontSize: 12,
+    color: "#4e4c4c",
+    marginBottom: 8
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: "bold"
+  },
+  buttonExit: {
+    position: "absolute",
+    bottom: 20,
+    alignSelf: "center",
+    width: "80%",
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#E63535",
+    borderRadius: 8
+  },
+  buttonExitText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600"
+  },
+  info: {
+    marginTop: 200,
+    color: "black",
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  fab: {
+  position: "absolute",
+  right: 20,
+  bottom: 90,
+  width: 55,
+  height: 55,
+  borderRadius: 30,
+  backgroundColor: "#2567E8",
+  justifyContent: "center",
+  alignItems: "center",
+  elevation: 5
+  }
 });
