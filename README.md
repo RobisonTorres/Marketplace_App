@@ -49,6 +49,8 @@ npx expo start
 Login screen.
 
 ![image alt](https://github.com/RobisonTorres/Marketplace/blob/d35ff52b143d02743c893f1d74485c6ad1b32427/login.png)
-<br>
+<br><br>
 
+Home screen.
 
+![image alt](https://github.com/RobisonTorres/Marketplace/blob/7dd90ae1a7990293e185dfa8384aaa40e9b05bd3/home.png)
