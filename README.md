@@ -54,3 +54,7 @@ Login screen.
 Home screen.
 
 ![image alt](https://github.com/RobisonTorres/Marketplace/blob/7dd90ae1a7990293e185dfa8384aaa40e9b05bd3/home.png)
+<br><br>
+
+## License
+This project is licensed under the MIT License.
