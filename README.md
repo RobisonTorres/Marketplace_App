@@ -46,4 +46,9 @@ npx expo start
 
 ## Screenshots
 
-_Add screenshots of the application here._
+Login screen.
+
+![image alt](https://github.com/RobisonTorres/Marketplace/blob/d35ff52b143d02743c893f1d74485c6ad1b32427/login.png)
+<br>
+
+
