@@ -21,7 +21,7 @@ This is a simple e-commerce application that displays different products based o
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/RobisonTorres/Marketplace.git
+git clone https://github.com/RobisonTorres/Marketplace_App.git
 ```
 
 2. Navigate to the project directory:
